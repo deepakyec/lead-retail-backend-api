@@ -9,14 +9,20 @@
     "@sailshq/lodash": "^3.10.2",
     "@sailshq/socket.io-redis": "^5.2.0",
     "async": "2.0.1",
+    "awesome-phonenumber": "^2.2.5",
+    "bcrypt": "^1.0.3",
     "grunt": "1.0.1",
+    "hal": "^1.2.0",
     "halson": "^3.0.0",
+    "pg": "^7.4.1",
     "sails": "^1.0.0",
     "sails-hook-autoreload": "^1.1.0",
     "sails-hook-grunt": "^3.0.2",
+    "sails-hook-orm": "^2.0.0-17",
     "sails-hook-sockets": "^1.4.0",
     "sails-mysql": "^1.0.0",
-    "sails-postgresql": "^1.0.0"
+    "sails-postgresql": "^1.0.0",
+    "sha256": "^0.2.0"
   },
   "devDependencies": {
     "@sailshq/eslint": "^4.19.3",

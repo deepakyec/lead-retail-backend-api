@@ -17,6 +17,9 @@ module.exports.policies = {
   *                                                                          *
   ***************************************************************************/
 
-  // '*': true,
+  //  '*': 'isLoggedIn',
+  // BusinessesController:{
+  //   '*':'isLoggedIn'
+  // }
 
 };

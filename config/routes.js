@@ -23,11 +23,14 @@ module.exports.routes = {
   * `assets` directory)                                                      *
   *                                                                          *
   ***************************************************************************/
-
+  
   '/': 'ApplicationController.index', 
-  'get /businesses': 'BusinessesController.index',
-  // 'get /businesses/:id': 'BusinessesController.indexOne',
-  // 'post /businesses': 'BusinessesController.create',
+  //'get /businesses': 'BusinessesController.index',
+  'post /businesses': 'BusinessesController.index',
+  'post /loginotprequest': 'BusinessesController.loginotprequest',
+  'post /verifyloginotp': 'BusinessesController.verifyloginotp',
+  'get /businesses/:parentid/orders/:fk': 'OrdersController.show',
+  // 'post /businesses': 'BusinessesController.create',loginotprequest verifyloginotp
   // 'patch /businesses/:id': 'BusinessesController.update',
   // 'put /businesses/:id': 'BusinessesController.update',
   // 'destory /businesses/:id': 'BusinessesController.destory',

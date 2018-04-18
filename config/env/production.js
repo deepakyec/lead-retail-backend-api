@@ -71,7 +71,12 @@ module.exports = {
       *                                                                           *
       ****************************************************************************/
       // ssl: true,
-
+      adapter: 'sails-postgresql',
+      user: 'postgres',
+      password: '1010',
+      port: '5432',
+      host: 'localhost',
+      database: 'lead_retail_development'
     },
 
   },
@@ -90,7 +95,7 @@ module.exports = {
     * https://sailsjs.com/docs/concepts/models-and-orm/model-settings#?migrate *
     *                                                                          *
     ***************************************************************************/
-    migrate: 'safe',
+    migrate: 'alter',
 
     /***************************************************************************
     *                                                                          *
