@@ -15,9 +15,8 @@ module.exports = {
             type: 'string',
             required: true
         },
-        digital_order_product_id: {
-            type: 'string',
-            required: true
+        websales_product_id: {
+            model:'Digital_Order_Products'
         },
         quantity: {
             type: 'number',

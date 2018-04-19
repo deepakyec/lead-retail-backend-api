@@ -25,8 +25,8 @@ module.exports.routes = {
   ***************************************************************************/
   
   '/': 'ApplicationController.index', 
-  //'get /businesses': 'BusinessesController.index',
-  'post /businesses': 'BusinessesController.index',
+  'get /businesses/:id': 'BusinessesController.index',
+  //'post /businesses': 'BusinessesController.index',
   'post /loginotprequest': 'BusinessesController.loginotprequest',
   'post /verifyloginotp': 'BusinessesController.verifyloginotp',
   'get /businesses/:parentid/orders/:fk': 'OrdersController.show',

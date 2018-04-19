@@ -52,7 +52,7 @@ module.exports.datastores = {
     // url: 'mysql://user:password@host:port/database',
     adapter: 'sails-postgresql',
     user: 'postgres',
-    password: '1010',
+    password: 'compaq@123',
     port: '5432',
     host: 'localhost',
     database: 'lead_retail_development'

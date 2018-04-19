@@ -49,4 +49,10 @@ module.exports.globals = {
 
   sails: true,
 
+  sales_tax:
+  {
+    name: "GST",
+    percentage: 18
+  }
+    
 };

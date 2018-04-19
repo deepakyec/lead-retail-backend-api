@@ -8,44 +8,160 @@ var hal = require('hal');
 
 module.exports = {
    
-    index:  async function(req, res) {
+    index:async function(req, res) {
         
-        let params = req.allParams();
-        let business_id = params.business.id;
-        console.log("business_id=>",business_id);
-
-        let business_obj = await Businesses.findOne({where:{id:business_id}})
-        .populate('opco')
-        .populate('region')
-        .populate('language')
-        .populate('orders')
-        .populate('customers')
-        .populate('sales')
-        .populate('digital_orders')
-        .populate('products');
-        
-        if(business_obj){
-            // let baseurl = req.headers.host;
-            // let apiurl = req.url;
-            // let business_url = baseurl+apiurl+'/'+business_obj.id;
-            // let business_hal = new hal.Resource(business_obj,business_url);
-            // business_hal.link(new hal.Link("business", business_url));
-    
-            // let getProdObj = await Products.find({business:business_id});
-            // for(let prod of getProdObj){
-            //     let product_hal = new hal.Resource(prod, baseurl+'/products/'+prod.id+'');
-            //     business_hal.embed('products',[product_hal]);
-            // }
-            // return res.customRes(business_hal); 
-            return res.ok(business_obj);
+        try
+        {
+            let params = req.allParams();
+            //console.log("business_id=>",params.id);
+            //console.log(params.business);
+            let business_id = params.id;
+            console.log("business_id=>",business_id);
             
+            let business_obj = await Businesses.findOne({where:{id:business_id}})
+            .populate('opco')
+            .populate('region')
+            .populate('language')
+            .populate('orders')
+            .populate('customers')
+            .populate('sales')
+            .populate('digital_orders')
+            .populate('products')
+           
+            let digital_order_products_data = await  Digital_Order_Products.find({                
+                where : {
+                        status: true
+                        }
+            });   
+
+            // let sales_tax = {
+            //     name: sails.config.globals.sales_tax.name,
+            //     percentage: sails.config.globals.sales_tax.percentage
+            // }
+
+            
+    //-------------------Binding Menus--------------//
+            let parent_menu = await Menus.find({
+                parent_id: 0
+            }).populate('submenus',{
+                select: ['status'],
+                where: {
+                    opco_id: business_obj.opco.id
+                }
+            });
+           
+            var tabs_menu = {};
+            
+            async.each(parent_menu,(element,callback) => {
+                
+                tabs_menu[element.name] ={ is_enabled:  element.status , sub_menu: {} };
+
+                
+                Menus.find({
+                    parent_id: element.id
+                }).populate('submenus',{
+                    select: ['status'],
+                    where: {
+                        opco_id: business_obj.opco.id
+                    }
+                }).then((data)=>{
+                    let sub_menu = data;                     
+                     for(currMenu in sub_menu){
+                        let fCurrMenu = sub_menu[currMenu];                        
+                        tabs_menu[element.name].sub_menu[fCurrMenu.name] = { 
+                                 is_enabled:  fCurrMenu.status 
+                        };
+                     }
+                     callback();
+                });
+
+                //console.log(JSON.stringify(sub_menu));
+               
+                
+                // async.each(sub_menu,(sub_elements) => {
+                //     let name = sub_elements.name
+                //     //console.log(JSON.stringify(sub_elements));
+                //     tabs_menu[element.name].sub_menu = { 
+                //         sub_elements.name: { is_enabled:  sub_elements.status } 
+                //     }   
+                //     console.log( tabs_menu[element.name].sub_menu );                 
+                // },
+                // (err) => {
+
+                // })
+            },function(err){
+                if(err)
+                {
+                    return res.serverError({err});
+                }
+                else
+                {           
+                    var halResponce = new  hal.Resource({
+                        address: business_obj.address,
+                        contact_person:business_obj.contact_person,
+                        currency:"INR",
+                        currency_symbol:"₹",
+                        dealers_data:[],
+                        digital_order_products_data:digital_order_products_data,
+                        email:business_obj.email,
+                        lh_products:[],
+                        locale:business_obj.locale,
+                        locality:business_obj.locality,
+                        menu_settings:{ tabs_menu: tabs_menu} ,
+                        name:business_obj.name,
+                        notificationLastUpdated:'',
+                        phone:business_obj.phone,
+                        profile_data:business_obj.profile_data,
+                        profile_data_url:null,
+                        sales_tax:{
+                            name: sails.config.globals.sales_tax.name,
+                            percentage: sails.config.globals.sales_tax.percentage
+                        },
+                        sap_code:business_obj.sap_code,
+                        tnc_accepted:business_obj.tnc_accepted,
+                        total_credit_cents:business_obj.total_credit_cents,
+                        total_credit_string:""
+                      });    
+                    
+                    halResponce.link(new hal.Link("self", req.protocol+"://"+ req.host + req.originalUrl));
+                    halResponce.embed('products',[]);
+                    return res.ok(halResponce.toJSON());
+                    // return res.ok({ 
+                    //     address: business_obj.address,
+                    //     contact_person:business_obj.contact_person,
+                    //     currency:"INR",
+                    //     currency_symbol:"₹",
+                    //     dealers_data:[],
+                    //     digital_order_products_data:digital_order_products_data,
+                    //     email:business_obj.email,
+                    //     lh_products:[],
+                    //     locale:business_obj.locale,
+                    //     locality:business_obj.locality,
+                    //     menu_settings:{ tabs_menu: tabs_menu} ,
+                    //     name:business_obj.name,
+                    //     notificationLastUpdated:'',
+                    //     phone:business_obj.phone,
+                    //     profile_data:business_obj.profile_data,
+                    //     profile_data_url:null,
+                    //     sales_tax:sales_tax,
+                    //     sap_code:business_obj.sap_code,
+                    //     tnc_accepted:business_obj.tnc_accepted,
+                    //     total_credit_cents:business_obj.total_credit_cents,
+                    //     total_credit_string:"",
+                    // });
+                }                
+            })
+                 
         }
-        return res.badRequest({error:"Bussiness id does not exist",status:false});
-          
-    },
+        catch(err)
+        {
+            console.log(err);
+            return res.badRequest({error:"Bussiness id does not exist",status:false});
+        }                 
+    },    
     loginotprequest: async function(req, res){
         let params = req.allParams();
-        
+        console.log(params);
         let phone = params.business.phone;
         //let normalized_phone = await UtilityService.normalize_phone(phone);
         let ret_obj = {};
