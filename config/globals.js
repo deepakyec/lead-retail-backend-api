@@ -53,6 +53,8 @@ module.exports.globals = {
   {
     name: "GST",
     percentage: 18
-  }
+  },
+
+  hal: require('hal')
     
 };

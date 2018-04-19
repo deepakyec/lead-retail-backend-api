@@ -22,4 +22,8 @@ module.exports.policies = {
   //   '*':'isLoggedIn'
   // }
 
+  // BusinessesController: {
+  //   'index':'isHeaderPresent',    
+  // }
+
 };

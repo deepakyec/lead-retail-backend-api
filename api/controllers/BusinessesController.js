@@ -1,4 +1,4 @@
-var hal = require('hal');
+
 /**
  * BusinessesController
  *
@@ -13,8 +13,7 @@ module.exports = {
         try
         {
             let params = req.allParams();
-            //console.log("business_id=>",params.id);
-            //console.log(params.business);
+
             let business_id = params.id;
             console.log("business_id=>",business_id);
             
@@ -34,10 +33,41 @@ module.exports = {
                         }
             });   
 
-            // let sales_tax = {
-            //     name: sails.config.globals.sales_tax.name,
-            //     percentage: sails.config.globals.sales_tax.percentage
-            // }
+            
+
+            let product = await Products.find({
+                select: [
+                    'id',
+                    'image_data_uri',
+                    'name',
+                    'price',
+                    'quantity',
+                    'stock_tracked'
+                ]
+            }
+            );
+
+            let productList = [];
+
+            for(currProd in product){                
+                let tempProdData = product[currProd];
+                productList.push({                     
+                    image_data_uri : tempProdData.image_data_uri,
+                    name : tempProdData.name,
+                    price : tempProdData.price,
+                    quantity : tempProdData.quantity,
+                    stock_tracked : tempProdData.stock_tracked, 
+                    _links: {
+                        business:{ 
+                            href: ApplicationService.business_url(req,business_obj.id)
+                        },
+                        self:{
+                            href: ApplicationService.products_url(req,business_obj.id,tempProdData.id)
+                        }
+                    }                   
+                });
+            }
+
 
             
     //-------------------Binding Menus--------------//
@@ -50,6 +80,7 @@ module.exports = {
                 }
             });
            
+          
             var tabs_menu = {};
             
             async.each(parent_menu,(element,callback) => {
@@ -75,20 +106,7 @@ module.exports = {
                      callback();
                 });
 
-                //console.log(JSON.stringify(sub_menu));
-               
-                
-                // async.each(sub_menu,(sub_elements) => {
-                //     let name = sub_elements.name
-                //     //console.log(JSON.stringify(sub_elements));
-                //     tabs_menu[element.name].sub_menu = { 
-                //         sub_elements.name: { is_enabled:  sub_elements.status } 
-                //     }   
-                //     console.log( tabs_menu[element.name].sub_menu );                 
-                // },
-                // (err) => {
-
-                // })
+            
             },function(err){
                 if(err)
                 {
@@ -96,7 +114,7 @@ module.exports = {
                 }
                 else
                 {           
-                    var halResponce = new  hal.Resource({
+                    var halResponce = new  sails.config.globals.hal.Resource({
                         address: business_obj.address,
                         contact_person:business_obj.contact_person,
                         currency:"INR",
@@ -123,32 +141,10 @@ module.exports = {
                         total_credit_string:""
                       });    
                     
-                    halResponce.link(new hal.Link("self", req.protocol+"://"+ req.host + req.originalUrl));
-                    halResponce.embed('products',[]);
-                    return res.ok(halResponce.toJSON());
-                    // return res.ok({ 
-                    //     address: business_obj.address,
-                    //     contact_person:business_obj.contact_person,
-                    //     currency:"INR",
-                    //     currency_symbol:"₹",
-                    //     dealers_data:[],
-                    //     digital_order_products_data:digital_order_products_data,
-                    //     email:business_obj.email,
-                    //     lh_products:[],
-                    //     locale:business_obj.locale,
-                    //     locality:business_obj.locality,
-                    //     menu_settings:{ tabs_menu: tabs_menu} ,
-                    //     name:business_obj.name,
-                    //     notificationLastUpdated:'',
-                    //     phone:business_obj.phone,
-                    //     profile_data:business_obj.profile_data,
-                    //     profile_data_url:null,
-                    //     sales_tax:sales_tax,
-                    //     sap_code:business_obj.sap_code,
-                    //     tnc_accepted:business_obj.tnc_accepted,
-                    //     total_credit_cents:business_obj.total_credit_cents,
-                    //     total_credit_string:"",
-                    // });
+                    halResponce.link(new sails.config.globals.hal.Link("self", req.protocol+"://"+ req.host + req.originalUrl));
+                    halResponce.embed('products',[productList]);
+
+                    return res.ok(halResponce.toJSON());                   
                 }                
             })
                  
@@ -202,24 +198,51 @@ module.exports = {
 
     },
     verifyloginotp: async function(req, res){
-        let params = req.allParams();
+        let params = req.allParams();        
+      
+        console.log(params.business);
 
         let otp = params.business.otp;
         let business_id = params.business.id;
         let ret_obj = {};
         ret_obj['result'] = {};
 
-        let verifyOTP = await Businesses.findOne({where:{and:[{otp:otp},{id:business_id}]}});
         
-        if(otp && verifyOTP){
-           let generated_password = verifyOTP.is_super?'cement000' : generate_login_password();
+
+        // let verifyOTP = await Businesses.findOne({
+        //     where:{
+        //         and:[
+        //             {otp:otp},
+        //             {id:business_id}
+        //         ]
+        //     }
+        // });
+
+        let verifyOTP = await Businesses.findOne({
+                id:business_id                
+        });
+        
+        if(verifyOTP == null)
+        {
+            return res.badRequest({error:"Invalid Username",status:false});
+        }
+
+        if(otp != verifyOTP.otp)
+        {
+            return res.badRequest({error:"Invalid OTP",status:false});
+        }
+        
+        // if(otp && verifyOTP)
+        // {
+
+           let generated_password = verifyOTP.is_super?'cement000' : String(Math.floor(Math.random() * 900000) + 100000);
            let encryptedPassword = await UtilityService.hashPassword(generated_password); 
            console.log('encryptedPassword=>',encryptedPassword);
            console.log('verifyOTP.id=>',verifyOTP.id);
            
            //update password for the businesses id
            let updatepassword = await Businesses.update({id:verifyOTP.id},{password_digest:encryptedPassword}).fetch();
-           console.log('updatepassword=>',updatepassword);
+           
            if(generated_password && updatepassword){
                 ret_obj['status'] = true;
                 ret_obj['result']['business_id'] = verifyOTP.id;
@@ -227,11 +250,17 @@ module.exports = {
            }else{
                 return res.badRequest({error:"Unable to process request. Please try again.",status:false});
            }
-        }else{
-            return res.badRequest({error:"Unable to verify OTP. Please try again.",status:false});
-        }
+
+        //}
+        // else
+        // {
+        //     return res.badRequest({error:"Unable to verify OTP. Please try again.",status:false});
+        // }
 
         return res.ok(ret_obj);
+    },
+    credit:async function(req,res) {
+
     },
     indexOne:  async function(req, res) {
         return res.ok('indexOne');

@@ -31,12 +31,14 @@ module.exports = {
         //     type: 'string',
         //     autoCreatedAt: true,
         // },
-        image_data: {
+        image_data_uri: {
             type: 'string',
+            columnName:'image_data',
             allowNull:true
         },
-        price_cents: {
+        price: {
             type: 'number',
+            columnName:'price_cents',
             allowNull:true
         },
         stock_tracked: {
