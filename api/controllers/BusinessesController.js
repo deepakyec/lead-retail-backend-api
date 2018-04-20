@@ -1,4 +1,5 @@
-
+var AppController = require('./ApplicationController');
+var BusinessContrllr = require('../controllers/BusinessesController')
 /**
  * BusinessesController
  *
@@ -13,8 +14,8 @@ module.exports = {
         try
         {
             let params = req.allParams();
-
             let business_id = params.id;
+              
             console.log("business_id=>",business_id);
             
             let business_obj = await Businesses.findOne({where:{id:business_id}})
@@ -32,9 +33,7 @@ module.exports = {
                         status: true
                         }
             });   
-
             
-
             let product = await Products.find({
                 select: [
                     'id',
@@ -44,8 +43,7 @@ module.exports = {
                     'quantity',
                     'stock_tracked'
                 ]
-            }
-            );
+            });
 
             let productList = [];
 
@@ -68,7 +66,6 @@ module.exports = {
                 });
             }
 
-
             
     //-------------------Binding Menus--------------//
             let parent_menu = await Menus.find({
@@ -86,7 +83,6 @@ module.exports = {
             async.each(parent_menu,(element,callback) => {
                 
                 tabs_menu[element.name] ={ is_enabled:  element.status , sub_menu: {} };
-
                 
                 Menus.find({
                     parent_id: element.id
@@ -131,6 +127,10 @@ module.exports = {
                         phone:business_obj.phone,
                         profile_data:business_obj.profile_data,
                         profile_data_url:null,
+                        opco_id:business_obj.opco.id,
+                        opco_data: business_obj.opco,
+                        region_id: business_obj.region.id,
+                        language_id: business_obj.language.id,
                         sales_tax:{
                             name: sails.config.globals.sales_tax.name,
                             percentage: sails.config.globals.sales_tax.percentage
@@ -142,12 +142,14 @@ module.exports = {
                       });    
                     
                     halResponce.link(new sails.config.globals.hal.Link("self", req.protocol+"://"+ req.host + req.originalUrl));
-                    halResponce.embed('products',[productList]);
 
-                    return res.ok(halResponce.toJSON());                   
+                    let f_res = halResponce.toJSON();
+                                
+                    f_res['_embedded'] = {'products':productList};
+                    return res.ok(f_res);                   
                 }                
             })
-                 
+               
         }
         catch(err)
         {
@@ -157,21 +159,30 @@ module.exports = {
     },    
     loginotprequest: async function(req, res){
         let params = req.allParams();
-        console.log(params);
+        
         let phone = params.business.phone;
         //let normalized_phone = await UtilityService.normalize_phone(phone);
         let ret_obj = {};
-        ret_obj['result'] = {};
+        ret_obj['result'] = { };
         let otp = await UtilityService.generateOTP();
         if(!phone){
-            return res.badRequest({
-                err:'Phone number is required'
-            })
+            return res.badRequest({ 
+                result: {
+                        error:"Phone number is required" 
+                        },
+                status:false})
         }
-        let login = await Businesses.findOne({where:{phone:phone}});
+        let login = await Businesses.findOne({
+            phone:phone
+        });
         
-        if(!login){
-            return res.badRequest({error:"Phone number is not registered with us.",status:false});
+        if(login == null){            
+            return res.ok({ 
+                result: {
+                        error:"Phone number is not registered with us." 
+                        },
+                status:false}
+            );
         }
 
         let otpUpdate = await Businesses.update({id:login.id},{otp:otp}).fetch();
@@ -190,9 +201,14 @@ module.exports = {
             ret_obj['result']['otp'] = otp;
           }
         }else{
-            return res.badRequest({error:"Couldn't generate OTP. Please try again.",status:false});
+            return res.serverError(
+                { 
+                    result: {
+                            error:"Couldn't generate OTP. Please try again."
+                            },
+                    status:false}
+                );
         }
-        
         
         return res.ok(ret_obj);
 
@@ -207,35 +223,25 @@ module.exports = {
         let ret_obj = {};
         ret_obj['result'] = {};
 
-        
-
-        // let verifyOTP = await Businesses.findOne({
-        //     where:{
-        //         and:[
-        //             {otp:otp},
-        //             {id:business_id}
-        //         ]
-        //     }
-        // });
-
         let verifyOTP = await Businesses.findOne({
                 id:business_id                
         });
         
         if(verifyOTP == null)
         {
-            return res.badRequest({error:"Invalid Username",status:false});
+            return res.ok({error:"Invalid Username",status:false});
         }
 
         if(otp != verifyOTP.otp)
         {
-            return res.badRequest({error:"Invalid OTP",status:false});
+            return res.ok({error:"Invalid OTP",status:false});
         }
         
         // if(otp && verifyOTP)
         // {
 
-           let generated_password = verifyOTP.is_super?'cement000' : String(Math.floor(Math.random() * 900000) + 100000);
+           //let generated_password = verifyOTP.is_super?'cement000' : String(Math.floor(Math.random() * 900000) + 100000);
+           let generated_password = verifyOTP.is_super?'cement000' : UtilityService.generateRandomString();
            let encryptedPassword = await UtilityService.hashPassword(generated_password); 
            console.log('encryptedPassword=>',encryptedPassword);
            console.log('verifyOTP.id=>',verifyOTP.id);
@@ -260,7 +266,120 @@ module.exports = {
         return res.ok(ret_obj);
     },
     credit:async function(req,res) {
+        try
+        {
+            
+            let linkResult = await AppController.index(req,null);
 
+            let data = await UtilityService.getUserIdFromHeaders(req);
+            let id  = data.id
+
+            let business_obj = await Businesses.findOne({where:{id:id}})
+            .populate('opco')
+            .populate('region')
+            .populate('language')
+            .populate('orders')
+            .populate('customers')
+            .populate('sales')
+            .populate('digital_orders')
+            .populate('products')
+           
+            let digital_order_products_data = await  Digital_Order_Products.find({                
+                where : {
+                        status: true
+                        }
+            });   
+
+            let parent_menu = await Menus.find({
+                parent_id: 0
+            }).populate('submenus',{
+                select: ['status'],
+                where: {
+                    opco_id: business_obj.opco.id
+                }
+            });
+           
+          
+            var tabs_menu = {};
+            
+            async.each(parent_menu,(element,callback) => {
+                
+                tabs_menu[element.name] ={ is_enabled:  element.status , sub_menu: {} };
+                
+                Menus.find({
+                    parent_id: element.id
+                }).populate('submenus',{
+                    select: ['status'],
+                    where: {
+                        opco_id: business_obj.opco.id
+                    }
+                }).then((data)=>{
+                    let sub_menu = data;                     
+                     for(currMenu in sub_menu){
+                        let fCurrMenu = sub_menu[currMenu];                        
+                        tabs_menu[element.name].sub_menu[fCurrMenu.name] = { 
+                                 is_enabled:  fCurrMenu.status 
+                        };
+                     }
+                     callback();
+                });
+
+            
+            },function(err){
+                if(err)
+                {
+                    return res.serverError({err});
+                }
+                else
+                {          
+                    let bussURL =  ApplicationService.business_url(req,id); 
+                    var halResponce = {
+                        business: {
+                            address: business_obj.address,
+                            contact_person:business_obj.contact_person,
+                            currency:"INR",
+                            currency_symbol:"₹",
+                            dealers_data:[],
+                            digital_order_products_data:digital_order_products_data,
+                            email:business_obj.email,
+                            lh_products:[],
+                            locale:business_obj.locale,
+                            locality:business_obj.locality,
+                            menu_settings:{ tabs_menu: tabs_menu} ,
+                            name:business_obj.name,                            
+                            phone:business_obj.phone,
+                            profile_data:business_obj.profile_data,
+                            profile_data_url:null,
+                            sales_tax:{
+                                name: sails.config.globals.sales_tax.name,
+                                percentage: sails.config.globals.sales_tax.percentage
+                            },
+                            sap_code:business_obj.sap_code,
+                            tnc_accepted:business_obj.tnc_accepted,
+                            total_credit_cents:business_obj.total_credit_cents,
+                            total_credit_string:"",
+                            _embedded: {
+                                 product: []
+                            },
+                            _links: {
+                                self: {
+                                    href: ApplicationService.business_url(req,id)
+                                }
+                            }
+                        },
+                        customers:[],
+                        notificationLastUpdated:'',
+                        _links: linkResult                        
+                      };                                        
+                    return res.ok(halResponce);                   
+                }                
+            })
+             
+        }
+        catch(err)
+        {
+            res.serverError({err});
+        }
     },
     indexOne:  async function(req, res) {
         return res.ok('indexOne');

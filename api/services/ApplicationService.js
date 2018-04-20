@@ -2,7 +2,7 @@ var hal = require('hal');
 module.exports = {
     // links(req,id){
     //     var halResponse =new hal.Resource({ },null);
-    //     halResponse.link(new hal.Link("self", req.protocol+"://"+ req.hostname + req.originalUrl));
+    //     halResponse.link(new hal.Link("self", req.protocol+"://"+ sails.config.globals.baseUrl  + req.originalUrl));
     //     halResponse.link(new hal.Link("business", business_url(req,id) ));
     //     halResponse.link(new hal.Link("customers", customers_url(req,id)) );
     //     halResponse.link(new hal.Link("daily_reports", daily_reports(req,id,"daily") ));
@@ -19,44 +19,44 @@ module.exports = {
     //     return halResponse.toJSON()
     // },
     business_url(req,id){
-        return req.protocol+"://"+ req.hostname + 'business/'+ id ;
+        return req.protocol+"://"+ sails.config.globals.baseUrl + 'business/'+ id ;
     },
     products_url(req,id,product_id){        
-        return req.protocol+"://"+ req.hostname + 'business/'+id+'/products'+(product_id==null? "":"/"+product_id);
+        return req.protocol+"://"+ sails.config.globals.baseUrl  + 'business/'+id+'/products'+(product_id==null? "":"/"+product_id);
     },
     customers_url(req,id){
-        return req.protocol+"://"+ req.hostname + 'business/'+id+'/customers';
+        return req.protocol+"://"+ sails.config.globals.baseUrl  + 'business/'+id+'/customers';
     },
     daily_reports_url(req,id,type){
-        return req.protocol+"://"+ req.hostname + 'business/'+id+'/reports?type='+type;
+        return req.protocol+"://"+ sails.config.globals.baseUrl  + 'business/'+id+'/reports?type='+type;
     },
     leads_url(req,id){
-        return req.protocol+"://"+ req.hostname + 'business/'+id+'/leads';
+        return req.protocol+"://"+ sails.config.globals.baseUrl  + 'business/'+id+'/leads';
     },
     lh_products_url(req,id){
-        return req.protocol+"://"+ req.hostname + 'business/'+id+'/lh_products';
+        return req.protocol+"://"+ sails.config.globals.baseUrl  + 'business/'+id+'/lh_products';
     },
     loyalty_url(req,id){
-        return req.protocol+"://"+ req.hostname + 'business/'+id+'/loyalty';
+        return req.protocol+"://"+ sails.config.globals.baseUrl  + 'business/'+id+'/loyalty';
     },
     notification_settings_url(req,id){
-        return req.protocol+"://"+ req.hostname + 'business/'+id+'/notification_settings';
+        return req.protocol+"://"+ sails.config.globals.baseUrl  + 'business/'+id+'/notification_settings';
     },
     orders_url(req,id){
-        return req.protocol+"://"+ req.hostname + 'business/'+id+'/orders';
+        return req.protocol+"://"+ sails.config.globals.baseUrl  + 'business/'+id+'/orders';
     },
     orders_xes_url(req,id){
-        return req.protocol+"://"+ req.hostname + 'business/'+id+'/orders_xes';
+        return req.protocol+"://"+ sails.config.globals.baseUrl  + 'business/'+id+'/orders_xes';
     },
     
     push_subscriptions_url(req,id){
-        return req.protocol+"://"+ req.hostname + 'business/'+id+'/push_subscriptions';
+        return req.protocol+"://"+ sails.config.globals.baseUrl  + 'business/'+id+'/push_subscriptions';
     },
     sales_url(req,id){
-        return req.protocol+"://"+ req.hostname + 'business/'+id+'/sales';
+        return req.protocol+"://"+ sails.config.globals.baseUrl  + 'business/'+id+'/sales';
     },
     weekly_reports_url(req,id,type){
-        return req.protocol+"://"+ req.hostname + 'business/'+id+'/weekly_reports?type='+type;        
+        return req.protocol+"://"+ sails.config.globals.baseUrl  + 'business/'+id+'/weekly_reports?type='+type;        
     }
 
 

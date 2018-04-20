@@ -55,6 +55,8 @@ module.exports.globals = {
     percentage: 18
   },
 
-  hal: require('hal')
+  hal: require('hal'),
     
+  baseUrl: "localhost:1337/"
+  
 };

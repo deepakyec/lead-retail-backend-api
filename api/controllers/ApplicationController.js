@@ -7,7 +7,9 @@
 var hal = require('hal');
 module.exports = {
     index: async function(req, res) {
-        
+
+        let data = await UtilityService.getUserIdFromHeaders(req);
+        let id  = data.id
         let business = ApplicationService.business_url(req,id);
         let customers =  ApplicationService.customers_url(req,id);
         let daily_reports = ApplicationService.daily_reports_url(req,id,"daily") ;
@@ -40,7 +42,16 @@ module.exports = {
         halResponse.link(new hal.Link("weekly_reports",weekly_reports));
 
         
-        return res.ok(halResponse.toJSON());                
+        if(res==null)
+        {
+            return halResponse;
+        }
+        else
+        {
+            return res.ok(halResponse.toJSON());      
+        }
+        
+
     }
 };
 

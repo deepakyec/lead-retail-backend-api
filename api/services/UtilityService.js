@@ -36,5 +36,27 @@ module.exports = {
     },
     async comparePassword(password,hash){
         return await bcrypt.compare(password,hash);
+    },
+    async getUserIdFromHeaders(req){
+        var auth = req.headers['authorization'];
+        var tmp = auth.split(' ');   // Split on a space, the original auth looks like  "Basic Y2hhcmxlczoxMjM0NQ==" and we need the 2nd part
+
+        var buf = new Buffer(tmp[1], 'base64'); // create a buffer and tell it the data coming in is base64
+        var plain_auth = buf.toString();        // read it back out as a string
+
+        
+        // At this point plain_auth = "username:password"
+
+        var creds = plain_auth.split(':');      // split on a ':'
+        var username = creds[0];
+        var password = creds[1];
+
+        let result = await Businesses.findOne({
+                        where : {
+                         user_name : username
+                         },
+                         select: ['id']
+                    });
+        return result
     }
 }

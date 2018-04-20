@@ -24,12 +24,13 @@ module.exports.routes = {
   *                                                                          *
   ***************************************************************************/
   
-  '/': 'ApplicationController.index', 
-  'get /businesses/:id': 'BusinessesController.index',
+  'GET /': 'ApplicationController.index', 
+  'GET /business/:id': 'BusinessesController.index',
   //'post /businesses': 'BusinessesController.index',
-  'post /loginotprequest': 'BusinessesController.loginotprequest',
-  'post /verifyloginotp': 'BusinessesController.verifyloginotp',
-  'get /businesses/:parentid/orders/:fk': 'OrdersController.show',
+  'POST /businesses/loginotprequest': 'BusinessesController.loginotprequest',
+  'POST /businesses/verifyloginotp': 'BusinessesController.verifyloginotp',
+  'GET /businesses/:parentid/orders/:fk': 'OrdersController.show',
+  'GET /credit/': 'BusinessesController.credit'
   // 'post /businesses': 'BusinessesController.create',loginotprequest verifyloginotp
   // 'patch /businesses/:id': 'BusinessesController.update',
   // 'put /businesses/:id': 'BusinessesController.update',
