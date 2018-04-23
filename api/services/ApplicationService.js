@@ -60,7 +60,7 @@ module.exports = {
     },
     customers_url_for_credits(req,business_id,id,isCredits)
     {
-        return req.protocol+"://"+ sails.config.globals.baseUrl  + 'business/'+business_id+'/customers/'+id+(isCredits ? "":"/credits");
+        return req.protocol+"://"+ sails.config.globals.baseUrl  + 'business/'+business_id+'/customers/'+id+(isCredits == true ? "":"/credit");
     }
 
 

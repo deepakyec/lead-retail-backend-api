@@ -51,12 +51,16 @@ module.exports = {
         var username = creds[0];
         var password = creds[1];
 
+
+        console.log('Username & Pwd', username,password);
+
         let result = await Businesses.findOne({
                         where : {
                          user_name : username
                          },
                          select: ['id']
                     });
+                    
         return result
     }
 }

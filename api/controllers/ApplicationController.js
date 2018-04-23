@@ -9,6 +9,7 @@ module.exports = {
     index: async function(req, res) {
 
         let data = await UtilityService.getUserIdFromHeaders(req);
+        console.log(data);
         let id  = data.id
         let business = ApplicationService.business_url(req,id);
         let customers =  ApplicationService.customers_url(req,id);

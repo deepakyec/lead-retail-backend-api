@@ -20,5 +20,72 @@ module.exports = {
 
         
         return shareObject;
+    },
+    async getCreditHistory(cust_id){
+        try
+        {
+            let sale_entry = await Sales.find({
+                customer: cust_id
+            });
+
+            console.log('sale_entry',sale_entry);
+    
+            let payments_entry = await Credit_ledger_entries.find({
+                customer_id: cust_id
+            });
+
+            console.log('payments_entry',payments_entry);
+
+            let result_ret = [];
+    
+            if(payments_entry != null || payments_entry != [])
+            {
+                async.forEach(payments_entry,(element,callback) => {          
+                             
+                    result_ret.push({
+                            id: element.id,
+                            amount_cents: (element.amount_cents),
+                            sale_id: element.id,
+                            amount_string: String((element.amount_cents/100)),
+                            balance_cents: element.amount_cents,
+                            balance_string: String((element.amount_cents)),
+                            notes: element.notes ,
+                            created_at: element.created_at,
+                            type: "credit_payment"
+                    });
+                    callback();
+                },(err) => {
+    
+                })
+            }
+    
+            if(sale_entry != null || sale_entry != [])
+            {
+                async.forEach(sale_entry,(element,callback) => {
+                    result_ret.push({
+                        id: sale_entry.id,
+                        amount_cents: sale_entry.total_cents,
+                        sale_id: sale_entry.id,
+                        amount_string: (sale_entry.total_cents/100).toString(),
+                        balance_cents: sale_entry.total_cents,
+                        balance_string: (sale_entry.total_cents).toString(),
+                        notes: sale_entry.notes,
+                        created_at: sale_entry.created_at,
+                        type:  ( sale_entry.payment_received || sale_entry.payment_received == 'no' )  ? 'credit_sale' : 'cash_sale'
+                    });
+                    callback
+                },(err) => {
+                    
+                })
+            }
+            console.log('while returning',result_ret);
+            return result_ret;
+        }
+        catch(err)
+        {
+            console.log(err);
+        }
+        
     }
+    
 }
