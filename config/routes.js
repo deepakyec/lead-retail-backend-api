@@ -30,7 +30,9 @@ module.exports.routes = {
   'POST /businesses/loginotprequest': 'BusinessesController.loginotprequest',
   'POST /businesses/verifyloginotp': 'BusinessesController.verifyloginotp',
   'GET /businesses/:parentid/orders/:fk': 'OrdersController.show',
-  'GET /credit/': 'BusinessesController.credit'
+  'GET /credit/': 'BusinessesController.credit',
+  'POST /businesses/:id/customers/:cust_id' : 'CustomerController.create'
+
   // 'post /businesses': 'BusinessesController.create',loginotprequest verifyloginotp
   // 'patch /businesses/:id': 'BusinessesController.update',
   // 'put /businesses/:id': 'BusinessesController.update',

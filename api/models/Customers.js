@@ -21,23 +21,28 @@ module.exports = {
         },
         deleted_at: {
             type: 'string',
-            required: true
+            required: false,
+            allowNull: true
         },
         customer_address: {
             type: 'string',
-            required: true
+            required: false,
+            allowNull: true
         },
         customer_locality: {
             type: 'string',
-            required: true
+            required: false,
+            allowNull: true
         },
         customer_email: {
             type: 'string',
-            required: true
+            required: false,
+            allowNull: true
         },
         customer_phone: {
             type: 'string',
-            required: true
+            required: false,
+            allowNull: true
         }
     }
 };

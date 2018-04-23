@@ -290,6 +290,46 @@ module.exports = {
                         }
             });   
 
+            let customerTableData = await Customers.find({
+                business: business_obj.id
+            });
+
+            let customerData = [];
+
+            // if(customerTableData != [] || customerData != null )
+            // {
+                
+            // }
+            async.each(customerTableData,async (element,callback) => {
+                customerData.push({
+                    credit_cents: element.credit_cents,
+                    credit_history: [],
+                    customer_address: element.customer_address,
+                    credit_string:  "₹"+(element.credit_cents/100).toString(),
+                    customer_email: element.customer_email,
+                    customer_locality: element.customer_locality,
+                    customer_phone:  element.customer_phone,
+                    full_name:   element.full_name,
+                    initials:  element.full_name.toString().charAt(0).toUpperCase(),
+                    share_options: await BusinessService.shareOptions(element.full_name,element.credit_cents),
+                    _links:{
+                        self: {
+                            href: await ApplicationService.customers_url_for_credits(req,element.business,element.id,false)
+                        },
+                        business: {
+                            href: await ApplicationService.business_url(req,element.business)
+                        },
+                        credits: {
+                            href: await ApplicationService.customers_url_for_credits(req,element.business,element.id,true)
+                        }
+                    }
+                });
+            },function(err){
+                if(err){
+                    customerData = [];
+                }
+            });
+
             let parent_menu = await Menus.find({
                 parent_id: 0
             }).populate('submenus',{
@@ -357,7 +397,7 @@ module.exports = {
                             sap_code:business_obj.sap_code,
                             tnc_accepted:business_obj.tnc_accepted,
                             total_credit_cents:business_obj.total_credit_cents,
-                            total_credit_string:"",
+                            total_credit_string:"₹"+(business_obj.total_credit_cents/100).toString(),
                             _embedded: {
                                  product: []
                             },
@@ -367,7 +407,7 @@ module.exports = {
                                 }
                             }
                         },
-                        customers:[],
+                        customers:customerData,
                         notificationLastUpdated:'',
                         _links: linkResult                        
                       };                                        

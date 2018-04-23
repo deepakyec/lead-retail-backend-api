@@ -23,7 +23,7 @@ module.exports.policies = {
   // }
 
   // BusinessesController: {
-  //   'index':'isHeaderPresent',    
+  //   'credit':'isHeaderPresent',    
   // }
 
 };

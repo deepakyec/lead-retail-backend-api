@@ -57,6 +57,10 @@ module.exports = {
     },
     weekly_reports_url(req,id,type){
         return req.protocol+"://"+ sails.config.globals.baseUrl  + 'business/'+id+'/weekly_reports?type='+type;        
+    },
+    customers_url_for_credits(req,business_id,id,isCredits)
+    {
+        return req.protocol+"://"+ sails.config.globals.baseUrl  + 'business/'+business_id+'/customers/'+id+(isCredits ? "":"/credits");
     }
 
 
