@@ -30,10 +30,14 @@ module.exports.routes = {
   'POST /businesses/loginotprequest': 'BusinessesController.loginotprequest',
   'POST /businesses/verifyloginotp': 'BusinessesController.verifyloginotp',
   'GET /businesses/:parentid/orders/:fk': 'OrdersController.show',
-  'GET /credit/': 'BusinessesController.credit',
-  'POST /businesses/:id/customers/:cust_id' : 'CustomerController.create',
-  'GET /businesses/:id/customers/:cust_id' : 'CustomerController.findOne'
 
+
+  //------------Customer API----------------//
+  'GET /credit/': 'BusinessesController.credit',
+  'POST /business/:id/customers/' : 'CustomerController.create',
+  'GET /businesses/:id/customers/:cust_id' : 'CustomerController.findOne',
+  'PATCH /business/:business_id/customers/:cust_id': 'CustomerController.update',
+  'POST /businesses/:business_id/customers/:cust_id/credits': 'CustomerController.credit'
 
   // 'post /businesses': 'BusinessesController.create',loginotprequest verifyloginotp
   // 'patch /businesses/:id': 'BusinessesController.update',

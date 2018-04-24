@@ -19,48 +19,48 @@ module.exports = {
     //     return halResponse.toJSON()
     // },
     business_url(req,id){
-        return req.protocol+"://"+ sails.config.globals.baseUrl + 'business/'+ id ;
+        return req.protocol+"://"+ sails.config.globals.baseUrl + '/business/'+ id ;
     },
     products_url(req,id,product_id){        
-        return req.protocol+"://"+ sails.config.globals.baseUrl  + 'business/'+id+'/products'+(product_id==null? "":"/"+product_id);
+        return req.protocol+"://"+ sails.config.globals.baseUrl  + '/business/'+id+'/products'+(product_id==null? "":"/"+product_id);
     },
     customers_url(req,id){
-        return req.protocol+"://"+ sails.config.globals.baseUrl  + 'business/'+id+'/customers';
+        return req.protocol+"://"+ sails.config.globals.baseUrl  + '/business/'+id+'/customers';
     },
     daily_reports_url(req,id,type){
-        return req.protocol+"://"+ sails.config.globals.baseUrl  + 'business/'+id+'/reports?type='+type;
+        return req.protocol+"://"+ sails.config.globals.baseUrl  + '/business/'+id+'/reports?type='+type;
     },
     leads_url(req,id){
-        return req.protocol+"://"+ sails.config.globals.baseUrl  + 'business/'+id+'/leads';
+        return req.protocol+"://"+ sails.config.globals.baseUrl  + '/business/'+id+'/leads';
     },
     lh_products_url(req,id){
-        return req.protocol+"://"+ sails.config.globals.baseUrl  + 'business/'+id+'/lh_products';
+        return req.protocol+"://"+ sails.config.globals.baseUrl  + '/business/'+id+'/lh_products';
     },
     loyalty_url(req,id){
         return req.protocol+"://"+ sails.config.globals.baseUrl  + 'business/'+id+'/loyalty';
     },
     notification_settings_url(req,id){
-        return req.protocol+"://"+ sails.config.globals.baseUrl  + 'business/'+id+'/notification_settings';
+        return req.protocol+"://"+ sails.config.globals.baseUrl  + '/business/'+id+'/notification_settings';
     },
     orders_url(req,id){
-        return req.protocol+"://"+ sails.config.globals.baseUrl  + 'business/'+id+'/orders';
+        return req.protocol+"://"+ sails.config.globals.baseUrl  + '/business/'+id+'/orders';
     },
     orders_xes_url(req,id){
-        return req.protocol+"://"+ sails.config.globals.baseUrl  + 'business/'+id+'/orders_xes';
+        return req.protocol+"://"+ sails.config.globals.baseUrl  + '/business/'+id+'/orders_xes';
     },
     
     push_subscriptions_url(req,id){
-        return req.protocol+"://"+ sails.config.globals.baseUrl  + 'business/'+id+'/push_subscriptions';
+        return req.protocol+"://"+ sails.config.globals.baseUrl  + '/business/'+id+'/push_subscriptions';
     },
     sales_url(req,id){
-        return req.protocol+"://"+ sails.config.globals.baseUrl  + 'business/'+id+'/sales';
+        return req.protocol+"://"+ sails.config.globals.baseUrl  + '/business/'+id+'/sales';
     },
     weekly_reports_url(req,id,type){
-        return req.protocol+"://"+ sails.config.globals.baseUrl  + 'business/'+id+'/weekly_reports?type='+type;        
+        return req.protocol+"://"+ sails.config.globals.baseUrl  + '/business/'+id+'/weekly_reports?type='+type;        
     },
     customers_url_for_credits(req,business_id,id,isCredits)
     {
-        return req.protocol+"://"+ sails.config.globals.baseUrl  + 'business/'+business_id+'/customers/'+id+(isCredits == true ? "":"/credit");
+        return req.protocol+"://"+ sails.config.globals.baseUrl  + '/business/'+business_id+'/customers/'+id+(isCredits == true ? "":"/credit");
     }
 
 

@@ -17,7 +17,7 @@ module.exports = {
         },
         credit_cents: {
             type: 'number',
-            required: true
+            defaultsTo: 0           
         },
         deleted_at: {
             type: 'string',

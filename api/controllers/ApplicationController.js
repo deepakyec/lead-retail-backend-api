@@ -27,7 +27,7 @@ module.exports = {
         
 
         var halResponse =new hal.Resource({ },null);
-        halResponse.link(new hal.Link("self", req.protocol+"://"+ req.host + req.originalUrl));
+        halResponse.link(new hal.Link("self", req.protocol+"://"+  sails.config.globals.baseUrl + req.originalUrl));
         halResponse.link(new hal.Link("business", business));
         halResponse.link(new hal.Link("customers", customers ));
         halResponse.link(new hal.Link("daily_reports", daily_reports));

@@ -73,11 +73,11 @@ module.exports = {
             }).populate('submenus',{
                 select: ['status'],
                 where: {
-                    opco_id: business_obj.opco.id
+                    opco_id: business_obj.opco.id,
+                    status: true
                 }
             });
            
-          
             var tabs_menu = {};
             
             async.each(parent_menu,(element,callback) => {
@@ -85,16 +85,20 @@ module.exports = {
                 tabs_menu[element.name] ={ is_enabled:  element.status , sub_menu: {} };
                 
                 Menus.find({
-                    parent_id: element.id
+                    parent_id: element.id,
+                    status: true
                 }).populate('submenus',{
                     select: ['status'],
                     where: {
-                        opco_id: business_obj.opco.id
+                        opco_id: business_obj.opco.id,
+                        status: true
                     }
                 }).then((data)=>{
                     let sub_menu = data;                     
                      for(currMenu in sub_menu){
-                        let fCurrMenu = sub_menu[currMenu];                        
+                         
+                        let fCurrMenu = sub_menu[currMenu];  
+                        console.log(fCurrMenu);
                         tabs_menu[element.name].sub_menu[fCurrMenu.name] = { 
                                  is_enabled:  fCurrMenu.status 
                         };
@@ -102,7 +106,6 @@ module.exports = {
                      callback();
                 });
 
-            
             },function(err){
                 if(err)
                 {
@@ -127,10 +130,10 @@ module.exports = {
                         phone:business_obj.phone,
                         profile_data:business_obj.profile_data,
                         profile_data_url:null,
-                        opco_id:business_obj.opco.id,
+                        opco_id:Number(business_obj.opco.id),
                         opco_data: business_obj.opco,
-                        region_id: business_obj.region.id,
-                        language_id: business_obj.language.id,
+                        region_id: Number(business_obj.region.id),
+                        language_id: Number(business_obj.language.id),
                         sales_tax:{
                             name: sails.config.globals.sales_tax.name,
                             percentage: sails.config.globals.sales_tax.percentage
@@ -141,8 +144,10 @@ module.exports = {
                         total_credit_string:""
                       });    
                     
-                    halResponce.link(new sails.config.globals.hal.Link("self", req.protocol+"://"+ req.host + req.originalUrl));
-
+                    //halResponce.link(new sails.config.globals.hal.Link("self", req.protocol+"://"+ req.host + req.originalUrl));
+                    halResponce.link(new sails.config.globals.hal.Link("self",ApplicationService.business_url(req,business_obj.id)));
+                    
+                    console.log(req.protocol+"://"+ req.host + req.originalUrl);
                     let f_res = halResponce.toJSON();
                                 
                     f_res['_embedded'] = {'products':productList};
@@ -288,7 +293,16 @@ module.exports = {
             let digital_order_products_data = await  Digital_Order_Products.find({                
                 where : {
                         status: true
-                        }
+                        },
+                select:[
+                    'websales_id',                    
+                    'article_no',
+                    'description',
+                    'status',
+                    'created_at',
+                    'updated_at',
+                    'id'
+                ]
             });   
 
             // let customerTableData = await Customers.find({

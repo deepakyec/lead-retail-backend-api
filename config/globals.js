@@ -57,6 +57,6 @@ module.exports.globals = {
 
   hal: require('hal'),
     
-  baseUrl: "localhost:1337/"
+  baseUrl: "localhost:1337"
   
 };
