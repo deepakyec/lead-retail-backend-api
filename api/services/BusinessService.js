@@ -18,14 +18,10 @@ module.exports = {
             let sale_entry = await Sales.find({
                 customer: cust_id
             });
-
-            console.log('sale_entry',sale_entry);
     
             let payments_entry = await Credit_ledger_entries.find({
                 customer_id: cust_id
             });
-
-            console.log('payments_entry',payments_entry);
 
             let result_ret = [];
     
@@ -69,12 +65,13 @@ module.exports = {
                     
                 })
             }
-            console.log('while returning',result_ret);
+
             return result_ret;
         }
         catch(err)
         {
-            console.log(err);
+            let result_ret = []
+            return result_ret;            
         }
         
     }

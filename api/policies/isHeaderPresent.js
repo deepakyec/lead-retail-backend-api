@@ -25,20 +25,19 @@ module.exports = async function(req,res,next){
                 var username = creds[0];
                 var password = creds[1];
                 
-                
+                console.log('in headers',username,password);
 
                 Businesses.findOne(
                    {
-                       where : {
-                        user_name : username
-                        }
+                        or : [
+                            { phone: username },
+                            { user_name: username }
+                        ]                                               
                     }
-                ).then(async (data) => {
-                   
+                ).then(async (data) => {                   
                     if(data != null)
                     {
-                        let result = await UtilityService.comparePassword(password,data.password_digest)
-                        console.log(result);
+                        let result = await UtilityService.comparePassword(password,data.password_digest)                       
                         if(result)
                         {
                             next();
@@ -59,7 +58,7 @@ module.exports = async function(req,res,next){
                     }
                                                            
                 }).catch(err => {
-                    console.log(err);
+                
                     res.statusCode = 401; // Force them to retry authentication
                     res.setHeader('WWW-Authenticate', 'Basic realm="Secure Area"');
                     res.badRequest('Invalid Username & Password Provided');

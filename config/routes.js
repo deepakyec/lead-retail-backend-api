@@ -37,8 +37,9 @@ module.exports.routes = {
   'POST /business/:id/customers/' : 'CustomerController.create',
   'GET /businesses/:id/customers/:cust_id' : 'CustomerController.findOne',
   'PATCH /business/:business_id/customers/:cust_id': 'CustomerController.update',
-  'POST /businesses/:business_id/customers/:cust_id/credits': 'CustomerController.credit'
-
+  'POST /businesses/:business_id/customers/:cust_id/credits': 'CustomerController.credit',
+  'GET /businesses/:business_id/lh_products': 'StockController.lhfind',
+  'GET /businesses/:business_id/orders_xes': 'StockController.ordersXesFind'
   // 'post /businesses': 'BusinessesController.create',loginotprequest verifyloginotp
   // 'patch /businesses/:id': 'BusinessesController.update',
   // 'put /businesses/:id': 'BusinessesController.update',

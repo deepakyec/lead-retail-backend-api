@@ -3,14 +3,13 @@ module.exports = {
 
         return new Promise(async (resolve, reject) => {
 
-        console.log('inside',business_id,customer_id)
+        
 
         let customerData = []
 
         let customerTableData = [];
         if(business_id != null)
         {
-            console.log('inside if',business_id)
             customerTableData = await Customers.find({
                 business: business_id
             });
@@ -22,14 +21,12 @@ module.exports = {
             });
         }
         
-        //console.log(customerTableData);
+
 
         async.each(customerTableData,async (element,callback) => {
 
             let creditHistoryData = await BusinessService.getCreditHistory(element.id);
             
-            //console.log('creditHistoryData',creditHistoryData);
-            console.log(element.id)
             customerData.push({
                 credit_cents: element.credit_cents,
                 credit_history: ( creditHistoryData == null || creditHistoryData ==[] ? []:creditHistoryData ) ,
@@ -55,7 +52,6 @@ module.exports = {
             });
             callback();
         },function(err){
-            //console.log('err',err);
             resolve(customerData);
         });
         });

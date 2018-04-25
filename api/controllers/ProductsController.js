@@ -8,8 +8,7 @@ var hal = require('hal');
 
 module.exports = {
     index:  async function(req, res) {
-        console.log("<=============request=============>",req.headers.host);
-        console.log("<=============request=============>",req.url);
+        
         let params = req.allParams();
         let business_id = params.business.id;
 

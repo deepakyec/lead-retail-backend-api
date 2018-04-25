@@ -13,6 +13,34 @@ module.exports = {
         {
             let params = req.allParams();            
 
+            let DuplicateDataResults = []
+            DuplicateDataResults = await Customers.find({
+                or : [
+                    { customer_phone: params.customer.customer_phone },
+                    { full_name: params.customer.full_name }
+                ],
+                id: {
+                    nin: [params.cust_id]
+                }
+            });
+
+            if(DuplicateDataResults.length != 0)
+            {
+                let errors = { customer_phone:[],full_name:[] }
+                if(DuplicateDataResults[0].customer_phone == params.customer.customer_phone)
+                {                 
+                  errors.customer_phone.push("Customer phone already exist.")
+                }
+                if(DuplicateDataResults[0].full_name == params.customer.full_name)
+                {
+                   errors.full_name.push("Full name has already been taken.")
+                }
+                return res.badRequest({
+                    errors: errors
+                })
+            }
+
+
             let customerResult = await Customers.create({
                 customer_phone: params.customer.customer_phone,
                 full_name: params.customer.full_name,
@@ -51,7 +79,6 @@ module.exports = {
         {
             
             let params = req.allParams();
-            console.log(params);
             let data = await CreditService.getCustomerAndCreditHistoryData(req,null,params.cust_id);     
             //for user we're fetchin only one customer's data so providing hardcoded 0'th index
             var halResponse = {
@@ -71,7 +98,6 @@ module.exports = {
         }
         catch(err)
         {
-            console.log(err);
             return res.serverError(err);
         }
         
@@ -127,11 +153,16 @@ module.exports = {
             let params = req.allParams();
 
             let creditPaymentResult = await Credit_Payments.create({
-                
+                customer_id: params.cust_id,
+                amount_cents: params.amount,
+                notes: params.notes
+            }).fetch();
+
+            let creditLedgerResult = await Credit_ledger_entries({
+                customer_id:creditPaymentResult.customer_id,
+                amount_cents:creditPaymentResult.amount_cents
             })
             
-            console.log(params);
-
             return res.ok();
         }
         catch(err)

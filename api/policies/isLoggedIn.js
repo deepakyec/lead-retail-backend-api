@@ -1,5 +1,5 @@
 module.exports = async function(req,res,next){
-    console.log("<==========req===========>",req);
+    
     
     // if(!req.headers || !req.headers.authorization){
     //     return res.badRequest({err:'autorization header is missing'});

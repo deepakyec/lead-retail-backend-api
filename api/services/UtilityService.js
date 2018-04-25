@@ -46,21 +46,40 @@ module.exports = {
 
         
         // At this point plain_auth = "username:password"
-
+        
         var creds = plain_auth.split(':');      // split on a ':'
         var username = creds[0];
         var password = creds[1];
-
-
-        console.log('Username & Pwd', username,password);
-
+        
         let result = await Businesses.findOne({
                         where : {
                          user_name : username
                          },
-                         select: ['id']
+                         //select: ['id']
                     });
                     
         return result
+    },
+    async formatToISODate(date)
+    {
+        try
+        {
+            console.log(date);
+            let dt = new Date(date);    
+            let dd = dt.getDate();
+            let mm = dt.getMonth()+1; 
+            let yyyy = dt.getFullYear();
+            if(dd<10){
+              dd='0'+dd;
+              } 
+            if(mm<10){
+                mm='0'+mm;
+              } 
+            return yyyy+'-'+mm+'-'+ dd;
+        }
+        catch(err)
+        {
+            return "";
+        }
     }
 }

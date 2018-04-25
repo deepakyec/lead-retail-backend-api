@@ -16,7 +16,7 @@ module.exports = {
             let params = req.allParams();
             let business_id = params.id;
               
-            console.log("business_id=>",business_id);
+            
             
             let business_obj = await Businesses.findOne({where:{id:business_id}})
             .populate('opco')
@@ -98,7 +98,7 @@ module.exports = {
                      for(currMenu in sub_menu){
                          
                         let fCurrMenu = sub_menu[currMenu];  
-                        console.log(fCurrMenu);
+                        
                         tabs_menu[element.name].sub_menu[fCurrMenu.name] = { 
                                  is_enabled:  fCurrMenu.status 
                         };
@@ -147,7 +147,7 @@ module.exports = {
                     //halResponce.link(new sails.config.globals.hal.Link("self", req.protocol+"://"+ req.host + req.originalUrl));
                     halResponce.link(new sails.config.globals.hal.Link("self",ApplicationService.business_url(req,business_obj.id)));
                     
-                    console.log(req.protocol+"://"+ req.host + req.originalUrl);
+                    
                     let f_res = halResponce.toJSON();
                                 
                     f_res['_embedded'] = {'products':productList};
@@ -158,7 +158,6 @@ module.exports = {
         }
         catch(err)
         {
-            console.log(err);
             return res.badRequest({error:"Bussiness id does not exist",status:false});
         }                 
     },    
@@ -220,8 +219,7 @@ module.exports = {
     },
     verifyloginotp: async function(req, res){
         let params = req.allParams();        
-      
-        console.log(params.business);
+            
 
         let otp = params.business.otp;
         let business_id = params.business.id;
@@ -248,9 +246,7 @@ module.exports = {
 
            //let generated_password = verifyOTP.is_super?'cement000' : String(Math.floor(Math.random() * 900000) + 100000);
            let generated_password = verifyOTP.is_super?'cement000' : UtilityService.generateRandomString();
-           let encryptedPassword = await UtilityService.hashPassword(generated_password); 
-           console.log('encryptedPassword=>',encryptedPassword);
-           console.log('verifyOTP.id=>',verifyOTP.id);
+           let encryptedPassword = await UtilityService.hashPassword(generated_password);            
            
            //update password for the businesses id
            let updatepassword = await Businesses.update({id:verifyOTP.id},{password_digest:encryptedPassword}).fetch();
@@ -305,46 +301,9 @@ module.exports = {
                 ]
             });   
 
-            // let customerTableData = await Customers.find({
-            //     business: business_obj.id
-            // });
-
+        
             let customerData = await CreditService.getCustomerAndCreditHistoryData(req,business_obj.id,null);
 
-
-            // async.each(customerTableData,async (element,callback) => {
-
-            //     let creditHistoryData = await BusinessService.getCreditHistory(element.id);
-                
-            //     customerData.push({
-            //         credit_cents: element.credit_cents,
-            //         credit_history: ( creditHistoryData == null || creditHistoryData ==[] ? []:creditHistoryData ) ,
-            //         customer_address: element.customer_address,
-            //         credit_string:  String("₹"+(element.credit_cents/100)),
-            //         customer_email: element.customer_email,
-            //         customer_locality: element.customer_locality,
-            //         customer_phone:  element.customer_phone,
-            //         full_name:   element.full_name,
-            //         initials:  element.full_name.toString().charAt(0).toUpperCase(),
-            //         share_options: await BusinessService.shareOptions(element.full_name,element.credit_cents),
-            //         _links:{
-            //             self: {
-            //                 href: await ApplicationService.customers_url_for_credits(req,element.business,element.id,false)
-            //             },
-            //             business: {
-            //                 href: await ApplicationService.business_url(req,element.business)
-            //             },
-            //             credits: {
-            //                 href: await ApplicationService.customers_url_for_credits(req,element.business,element.id,true)
-            //             }
-            //         }
-            //     });
-            // },function(err){
-            //     if(err){
-            //         console.log(err);
-            //         customerData = [];
-            //     }
-            // });
 
             let parent_menu = await Menus.find({
                 parent_id: 0

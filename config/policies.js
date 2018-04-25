@@ -22,8 +22,11 @@ module.exports.policies = {
   //   '*':'isLoggedIn'
   // }
 
-  // BusinessesController: {
-  //   'credit':'isHeaderPresent',    
-  // }
+  BusinessesController: {
+    'credit':'isHeaderPresent',    
+  },
+  CustomerController: {
+    'create':'isHeaderPresent', 
+  }
 
 };
