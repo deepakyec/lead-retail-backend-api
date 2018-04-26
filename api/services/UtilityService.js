@@ -81,5 +81,19 @@ module.exports = {
         {
             return "";
         }
-    }
+    },
+    // async query(model, sql, values) {
+    //     values = values || [];
+    //     console.log('inside query method');
+    //     return new Promise((resolve, reject) => {
+      
+    //       model.query(sql, values, (err, results) => {
+    //         if (err) {
+    //           return reject(err);
+    //         }
+    //         console.log(results);
+    //         resolve(results);
+    //       });
+    //     });
+    //   }
 }

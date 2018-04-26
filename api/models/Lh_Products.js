@@ -16,7 +16,9 @@ module.exports = {
       type: 'string'
     },
     material_code: {
-      type: 'number'
+      type: 'string',
+      // columnName:'material_code',
+      // model: 'Orders_Xes',         
     },
     image_data: {
       type: 'string'
@@ -42,6 +44,10 @@ module.exports = {
     product_type: {
       type: 'string'
     },
+    // orders_data: {
+    //   columnName:'material_code',
+    //   model: 'Orders_Xes',         
+    // }
     // _links: {
     //   type: 'json',
     //   defaultsTo: {

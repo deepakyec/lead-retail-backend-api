@@ -16,52 +16,74 @@ module.exports = {
       model:'Businesses'
     },
     do_number: {
-      type:'number'
+      type:'number',
+      allowNull: true
     },
     sold_to_party_code: {
-      type:'number'
+      type:'number',
+      allowNull: true
     },
     ars_sap_code: {
-      type:'number'
+      type:'string',
+      allowNull: true
     },
     material_code: {
-      type:'number'
+      type:'string',
+      allowNull: true   
     },
+    // material_code_products: {
+    //   // model: 'Lh_Products',
+    //   // via: 'material_code'
+    //   collection: 'Lh_Products', 
+    //   via: 'material_code'
+    // },
     quantity_tonnes: {
-      type:'number'
+      type:'number',
+      allowNull: true
     },
     quantity_bags: {
-      type:'number'
+      type:'number',
+      allowNull: true
     },
     points: {
-      type:'number'
+      type:'number',
+      allowNull: true
     },
     order_created_at: {
-      type:'string'
+      type:'string',
+      allowNull: true
     },
     branch_code: {
-      type:'string'
+      type:'string',
+      allowNull: true
     },
     truck_no: {
-      type:'string'
+      type:'string',
+      allowNull: true
     },
     batch_no: {
-      type:'number'
+      type:'number',
+      allowNull: true
     },
     source: {
-      type:'string'
+      type:'string',
+      allowNull: true
     },
     added_by: {
-      type:'number'
+      type:'number',
+      allowNull: true
     },
     status: {
-      type:'number'
+      type:'number',
+      allowNull: true
     },
     default_quantity_bags: {
-      type:'number'
+      type:'number',
+      allowNull: true
     },
     note: {
-      type:'string'
+      type:'string',
+      allowNull: true
     }
 
     //  ╔═╗╔╦╗╔╗ ╔═╗╔╦╗╔═╗
