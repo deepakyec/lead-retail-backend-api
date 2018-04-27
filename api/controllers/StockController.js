@@ -106,13 +106,29 @@ module.exports = {
             
         }
       
+        let OrdersResult = [];
+        if(req.params.show_order_with_previous_year == null || req.params.show_order_with_previous_year == false)
+        {
+            OrdersResult = await Orders_Xes.find({
+                where : { business_id:userData.id }
+            });    
+        }
+        else
+        {            
+            OrdersResult = await Orders_Xes.find({
+                where : { 
+                    business_id:userData.id,
+                    created_at:  { 
+                        '>': new Date(sails.config.globals.moment().subtract(1, 'year').month(0).date(1)),//----setting previous year's 1'st Jan
+                        '<': new Date() }
+                }
+            });    
+        }
         
-        let OrdersResult = await Orders_Xes.find({
-            where : { business_id:userData.id }
-        });
-
 
         let orders = {};  
+
+        let selfUrl = await ApplicationService.orders_xes_url(req,userData.id);
 
         if(OrdersResult.length != 0)
         {
@@ -124,8 +140,6 @@ module.exports = {
 
                 if(!orders.hasOwnProperty(getYearOfElement + '-' + getMonthOfElement))
                 {
-                    // let monthName =  (getYearOfElement + '-' + getMonthOfElement).toString()                    
-                    // orders.push({ monthName : {} });
                     orders[getYearOfElement + '-' + getMonthOfElement] = {
                         confirmed_bags_total: 0,
                         estimated_bags_total: 0,
@@ -133,41 +147,13 @@ module.exports = {
                         months: []
                     }                  
                 }
-                // else
-                // {
-                    // let ifMonthExistFlag = false; //-------------it means month is not there in the array
-                    // for(let i = 0; i< orders.length ;i++)
-                    // {
-                    //     if(orders.hasOwnProperty(getYearOfElement + '-' + getMonthOfElement))
-                    //     {
-                    //         ifMonthExistFlag = true
-                    //         console.log('in flag',j)
-                    //     }                       
-                    // }
+                
+                
+                let material_code_products = await Lh_Products.findOne({
+                    material_code: element.material_code
+                });
 
-                    // if(!ifMonthExistFlag)
-                    // {
-                        // let monthName =  (getYearOfElement + '-' + getMonthOfElement).toString()                    
-                        // orders.push({ monthName : {} })
-                        // orders[getYearOfElement + '-' + getMonthOfElement] = {
-                        //     confirmed_bags_total: 0,
-                        //     estimated_bags_total: 0,
-                        //     is_confirmed: false,
-                        //     months: []
-                        // }
-                        
-                    //}
-                //}
-              
-
-                //console.log('index'+j,orders)
-         
-
-                // let material_code_products =  await Lh_Products.findOne({
-                //     material_code: element.material_code
-                // });
-
-                orders[getYearOfElement + '-' + getMonthOfElement].months.push({
+                let orderObj = {
                     added_by: element.added_by,
                     ars_sap_code: element.ars_sap_code,
                     batch_no: element.batch_no,
@@ -177,6 +163,7 @@ module.exports = {
                     do_number: element.do_number,
                     id: element.id,
                     material_code: element.material_code,
+                    material_code_products: material_code_products,
                     order_created_at: element.order_created_at,
                     points: element.points,
                     quantity_bags: element.quantity_bags,
@@ -187,100 +174,85 @@ module.exports = {
                     truck_no: element.truck_no,
                     updated_at: element.updated_at,
                     _links: {}
-                });
+                }
+
+                let orderMonth = new Date(element.order_created_at).getMonth() + 1 ;//----------Because january comes as 0 so it's always +1
+                let orderYear = new Date(element.order_created_at).getFullYear();
+
+                let confirmedBags = await Loyalties.find({
+                    month: orderMonth,
+                    year: orderYear,
+                    sap_code:element.ars_sap_code
+                })
+
+                if(confirmedBags.length > 0)
+                {
+                    orders[getYearOfElement + '-' + getMonthOfElement].is_confirmed = true;
+                    orders[getYearOfElement + '-' + getMonthOfElement].is_confirmed = confirmedBags[0].quantity_tonnes/ 5;
+                }
+
+                orders[getYearOfElement + '-' + getMonthOfElement].estimated_bags_total += element.default_quantity_bags;
+                orders[getYearOfElement + '-' + getMonthOfElement].months.push(orderObj);
 
                 callback();
             },function(err){
                 if(err != null)
                 {
-                    console.log(err)
-                    return res.serverError(err)
+                    return res.ok({ 
+                        total: 0 ,
+                        _dates_data: _dates_data,
+                        _embedded: { orders: orders },
+                        _links: {
+                            self: {
+                                href: selfUrl
+                            }
+                        } 
+                    });
                 }
                 else
                 {
-                    
+                    return res.ok({ 
+                        total: OrdersResult.length ,
+                        _dates_data: _dates_data,
+                        _embedded: { orders: orders },
+                        _links: {
+                            self: {
+                                href: selfUrl
+                            }
+                        } 
+                    });
                 }
-
             })
         }
         
-        
-        return res.ok({ 
-                total:10 ,
-                _dates_data: _dates_data,
-                _embedded: { orders: orders },_links: {
-                    self: {
-                        href: "http://localhost:9999/businesses/1/orders_xes"
-                    }
-                } 
-            });
-
-        // let data = await UtilityService.query(Orders_Xes, 'SELECT * FROM Orders_Xes WHERE business_id = ?', [userData.id])
-        // console.log(data);
-
-        // var Driver =await sails.getDatastore().driver;
-
-        // console.log(Driver)
-
-        //.then(console.log);
-        
-        // WHERE Orders_Xes.business_id = $1  userData.id
-        // Orders_Xes.query('SELECT * FROM Orders_Xes', [ ] , function(err, rawResult) {
-        //     console.log('err',err,'rawResult',rawResult);
-        //     if (err) { return res.serverError(err); }
-          
-        //     return new Promise((resolve,reject) => {
-        //         resolve(rawResult); 
-        //     })
-
-        //     sails.log(rawResult);
-        //     // (result format depends on the SQL query that was passed in, and the adapter you're using)
-          
-        //     // Then parse the raw result and do whatever you like with it.
-          
-        //     return res.ok(rawResult);
-          
-        // });
-
-        // if(OrdersResult.length != 0)
-        // {
-
-        // }
-
-        
-
-        // let from_date = await Orders_Xes.find({
-        //     where : {
-        //         business_id: req.params.business_id
-        //             }, 
-        //     select: ['created_at'],
-        //     limit: 1,
-        //     sort: 'created_at ASC'
-        // });
-        // console.log(from_date);
-
-
-        // let last_updated_date = await Orders_Xes.find({
-        //     where : {
-        //         business_id: req.params.business_id
-        //             },
-        //     select: ['updated_at'],
-        //     limit: 1,
-        //     sort: 'updated_at DESC'
-        // });
-        // console.log(last_updated_date);
-        //UtilityService.formatToISODate()
-
-        // let _dates_data = {
-        //     from_date: await UtilityService.formatToISODate(from_date[0].created_at) ,
-        //     last_updated_date: await UtilityService.formatToISODate(last_updated_date[0].updated_at),
-        //     to_date:  await UtilityService.formatToISODate(new Date())
-        // }
-        return res.ok({OrdersResult});
       }
       catch(err)
       {
         return res.ok(err);
+      }
+  },
+  async create(req,res){
+      try
+      {
+
+        let userData = await UtilityService.getUserIdFromHeaders(req);
+
+        let params = req.allParams();
+        let result = Orders_Xes.create({
+            material_code: params.material_code,
+            quantity_bags: Number(params.quantity_bags),
+            default_quantity_bags: Number(params.quantity_bags),
+            quantity_tonnes: (Number(params.quantity_bags)* 50 / 1000).toString(),
+            points: 0,
+            order_created_at: params.order_created_at,
+            source: params.source,
+            added_by: userData.id,
+            updated_at: new Date()
+        }).fetch();
+      }
+      catch(err)
+      {
+
       }
   }
 
