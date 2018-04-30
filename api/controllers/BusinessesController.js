@@ -65,8 +65,30 @@ module.exports = {
                     }                   
                 });
             }
+            //------------------Getting Dealers Data--------------------//
 
-            
+            let businessToDealerMappingData = await Business_Dealer_Mappings.find({
+                business_sap_code: business_obj.sap_code
+            })
+
+            dealersData = [];
+            for(let k = 0; k< businessToDealerMappingData.length ; k++)
+            {
+                let dealerData = await Dealers.findOne({
+                    sap_code:businessToDealerMappingData[k].dealer_sap_code
+                })
+                if(dealerData != null)
+                {
+                    dealersData.push({
+                        id: Number(dealerData.id),
+                        name: dealerData.name,
+                        sap_code: dealerData.sap_code,
+                        status: dealerData.status,
+                        websales_id: Number(dealerData.websales_id),
+                        _links: {}
+                    })
+                }                        
+            }
     //-------------------Binding Menus--------------//
             let parent_menu = await Menus.find({
                 parent_id: 0
@@ -113,12 +135,14 @@ module.exports = {
                 }
                 else
                 {           
-                    var halResponce = new  sails.config.globals.hal.Resource({
+                    
+
+                    var halResource = new  sails.config.globals.hal.Resource({
                         address: business_obj.address,
                         contact_person:business_obj.contact_person,
                         currency:"INR",
                         currency_symbol:"₹",
-                        dealers_data:[],
+                        dealers_data:dealersData,
                         digital_order_products_data:digital_order_products_data,
                         email:business_obj.email,
                         lh_products:[],
@@ -144,11 +168,11 @@ module.exports = {
                         total_credit_string:""
                       });    
                     
-                    //halResponce.link(new sails.config.globals.hal.Link("self", req.protocol+"://"+ req.host + req.originalUrl));
-                    halResponce.link(new sails.config.globals.hal.Link("self",ApplicationService.business_url(req,business_obj.id)));
+                    //halResource.link(new sails.config.globals.hal.Link("self", req.protocol+"://"+ req.host + req.originalUrl));
+                    halResource.link(new sails.config.globals.hal.Link("self",ApplicationService.business_url(req,business_obj.id)));
                     
                     
-                    let f_res = halResponce.toJSON();
+                    let f_res = halResource.toJSON();
                                 
                     f_res['_embedded'] = {'products':productList};
                     return res.ok(f_res);                   
@@ -158,6 +182,7 @@ module.exports = {
         }
         catch(err)
         {
+            console.log(err);
             return res.badRequest({error:"Bussiness id does not exist",status:false});
         }                 
     },    
@@ -348,7 +373,7 @@ module.exports = {
                 else
                 {          
                     let bussURL =  ApplicationService.business_url(req,id); 
-                    var halResponce = {
+                    var halResource = {
                         business: {
                             address: business_obj.address,
                             contact_person:business_obj.contact_person,
@@ -386,7 +411,7 @@ module.exports = {
                         notificationLastUpdated:'',
                         _links: linkResult._links                        
                       };                                        
-                    return res.ok(halResponce);                   
+                    return res.ok(halResource);                   
                 }                
             });             
         }

@@ -22,7 +22,7 @@ module.exports = {
         return req.protocol+"://"+ sails.config.globals.baseUrl + '/business/'+ id ;
     },
     products_url(req,id,product_id){        
-        return req.protocol+"://"+ sails.config.globals.baseUrl  + '/business/'+id+'/products'+(product_id==null? "":"/"+product_id);
+        return req.protocol+"://"+ sails.config.globals.baseUrl  + '/business/'+id+'/products'+ ( product_id==null? "":"/"+product_id );
     },
     customers_url(req,id){
         return req.protocol+"://"+ sails.config.globals.baseUrl  + '/business/'+id+'/customers';
@@ -42,18 +42,18 @@ module.exports = {
     notification_settings_url(req,id){
         return req.protocol+"://"+ sails.config.globals.baseUrl  + '/business/'+id+'/notification_settings';
     },
-    orders_url(req,id){
-        return req.protocol+"://"+ sails.config.globals.baseUrl  + '/business/'+id+'/orders';
+    orders_url(req,id,order_id){
+        return req.protocol+"://"+ sails.config.globals.baseUrl  + '/business/'+id+'/orders'+( order_id != null ? "/" + order_id: "") ;
     },
-    orders_xes_url(req,id){
-        return req.protocol+"://"+ sails.config.globals.baseUrl  + '/business/'+id+'/orders_xes';
+    orders_xes_url(req,id,orderX_id){
+        return req.protocol+"://"+ sails.config.globals.baseUrl  + '/business/'+id+'/orders_xes'+( orderX_id != null ? "."+orderX_id: "" );
     },
     
     push_subscriptions_url(req,id){
         return req.protocol+"://"+ sails.config.globals.baseUrl  + '/business/'+id+'/push_subscriptions';
     },
-    sales_url(req,id){
-        return req.protocol+"://"+ sails.config.globals.baseUrl  + '/business/'+id+'/sales';
+    sales_url(req,id,sale_id){
+        return req.protocol+"://"+ sails.config.globals.baseUrl  + '/business/'+id+'/sales'+ (sale_id != null ? "/"+sale_id : "" );
     },
     weekly_reports_url(req,id,type){
         return req.protocol+"://"+ sails.config.globals.baseUrl  + '/business/'+id+'/weekly_reports?type='+type;        
@@ -65,6 +65,8 @@ module.exports = {
     lh_products(req,id){
         return req.protocol+"://"+ sails.config.globals.baseUrl  + '/businesses/'+id+'/lh_products';
     },
-
+    digital_orders(req,id,order_id){
+        return req.protocol+"://"+ sails.config.globals.baseUrl  + '/businesses/'+id+'/digital_orders' + (order_id != null ? "/"+order_id : "" );
+    }
 
 }

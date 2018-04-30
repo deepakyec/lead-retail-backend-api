@@ -52,6 +52,11 @@ module.exports = {
         material_code: {
             type: 'string',
             allowNull:true
+        },
+        stock_movement_collection: {
+            collection: 'Stock_Movements',
+            via: 'product_id'
+            //model: 'StockMovement'
         }
     }
-};
+}; 

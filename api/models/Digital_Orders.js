@@ -12,8 +12,7 @@ module.exports = {
             required:true
         },
         dealer_id: {
-            type: 'string',
-            required: true
+            model:'Dealers'
         },
         websales_product_id: {
             model:'Digital_Order_Products'

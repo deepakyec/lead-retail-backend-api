@@ -18,11 +18,11 @@ module.exports = {
         let lh_products = ApplicationService.lh_products_url(req,id) ;
         let loyalty = ApplicationService.loyalty_url(req,id);
         let notification_settings = ApplicationService.notification_settings_url(req,id);
-        let orders = ApplicationService.orders_url(req,id) ;
+        let orders = ApplicationService.orders_url(req,id,null) ;
         let orders_xes = ApplicationService.orders_xes_url(req,id);
         let products = ApplicationService.products_url(req,id,null);
         let push_subscriptions = ApplicationService.push_subscriptions_url(req,id);
-        let sales = ApplicationService.sales_url(req,id);
+        let sales = ApplicationService.sales_url(req,id,null);
         let weekly_reports = ApplicationService.weekly_reports_url(req,id,"weekly");
         
 

@@ -38,15 +38,25 @@ module.exports.routes = {
   'GET /businesses/:id/customers/:cust_id' : 'CustomerController.findOne',
   'PATCH /business/:business_id/customers/:cust_id': 'CustomerController.update',
   'POST /businesses/:business_id/customers/:cust_id/credits': 'CustomerController.credit',
+  
   // 'GET /businesses/:business_id/lh_products': 'StockController.lhfind',
   // 'GET /businesses/:business_id/orders_xes': 'StockController.ordersXesFind',
 
 
   //----------Bags Lifted------------------//
-  'GET /business/:business_id/lh_products': 'StockController.lhfind',
-  'GET /business/:business_id/orders_xes?:show_order_with_previous_year' : 'StockController.ordersXesFind',
+  'GET /business/:business_id/lh_products': 'BagsLiftedController.lhfind',
+  'GET /business/:business_id/orders_xes?:show_order_with_previous_year' : 'BagsLiftedController.ordersXesFind',
+  'POST /businesses/:business_id/orders_xes' : 'BagsLiftedController.create',
 
 
+
+  //---------Orders -----------------------//
+  'GET /business/:business_id/digital_orders' : 'OrdersController.digitalOrders',
+
+
+  //---------Stock ------------------------//
+  'GET /businesses/:business_id/products' : 'StockController.getStockIndex'
+  
 
 
   // 'post /businesses': 'BusinessesController.create',loginotprequest verifyloginotp
